@@ -1,0 +1,35 @@
+.boxsimg {
+  overflow: hidden;
+  background-color: ghostwhite;
+  align-items: center;
+  width: 100%;
+  max-height: 100%;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.boxsimg img {
+  max-width: 100%;
+  max-height: 100%;
+  display: block;
+  /* remove extra space below image */
+  margin: auto;
+  vertical-align: middle;
+  align-items: center;
+}
+
+.custom-file .custom-file-label {
+  background: #4b51a1;
+  color: #fff;
+  font-weight: 600;
+  height: 100%;
+  padding: 7px;
+}
+
+.custom-file-label::after {
+  display: none !important;
+}
+
+.custom-file .custom-file-input {
+  cursor: pointer;
+}

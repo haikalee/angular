@@ -1,0 +1,396 @@
+<div class="container-fluid" *ngIf="!showForm">
+  <div class="row">
+    <div class="col-md-12">
+      <div
+        class="page-title-box d-flex align-items-center justify-content-between"
+      >
+        <h4 class="mb-0 font-size-18">{{ pageTitle }}</h4>
+        <div class="page-title-rigth d-lg block">
+          <button class="btn btn-primary btn-sm" (click)="create()">
+            <i class="fa fa-plus font-size-14 align-middle"></i>
+            Tambah Penjualan
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-body">
+          <div class="row mb-15">
+            <div class="col-md-12">
+              <div class="form-group row">
+                <div class="col-md-3 mb-3">
+                  <input
+                    class="form-control form-control-sm"
+                    type="text"
+                    name="customer"
+                    [(ngModel)]="model.customer"
+                    placeholder="customer"
+                    (keyup)="reloadDataTable()"
+                  />
+                </div>
+                <div class="col-md-3 mb-3">
+                  <ng-select
+                    [(ngModel)]="model.id_customer"
+                    [items]="listCustomer"
+                    bindLabel="nama"
+                    bindValue="id"
+                    [disabled]="isView"
+                    name="id_customer"
+                    placeholder="Pilih Customer"
+                    appendTo="body"
+                    (change)="reloadDataTable()"
+                  ></ng-select>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table
+              datatable
+              [dtOptions]="dtOptions"
+              data-page-length="20"
+              class="table table-hover mobile-optimised mb-0"
+            >
+              <thead class="thead-light">
+                <tr class="text-center">
+                  <th>No</th>
+                  <th>Customer</th>
+                  <th>Tanggal</th>
+
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  *ngFor="let val of listData; index as i"
+                  class="text-center"
+                  (dblclick)="view(val)"
+                >
+                  <td data-th="No">{{ i + 1 }}</td>
+                  <td data-th="kode">
+                    {{ val.nama_customer || val.customer }}
+                  </td>
+                  <td data-th="tanggal">{{ val.tanggal }}</td>
+                  <td class="row-action">
+                    <ul class="list-inline mb-0">
+                      <li class="list-inline-item">
+                        <a
+                          href="javascript: void(0)"
+                          (click)="delete(val)"
+                          class="mb-danger"
+                          placement="left"
+                          ngbTooltip="Hapus"
+                        >
+                          <i class="fa fa-trash font-size-14 align-middle"></i>
+                        </a>
+                      </li>
+                    </ul>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="container-fluid" *ngIf="showForm">
+  <app-page-title
+    [title]="pageTitle"
+    [breadcrumbItems]="breadCrumbItems"
+  ></app-page-title>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card">
+        <div id="transaksi" class="card-body">
+          <form disabled="isView">
+            <fieldset [disabled]="isView">
+              <div class="row">
+                <div class="col-md-12" style="padding-bottom: 10px">
+                  <span
+                    style="
+                      font-style: italic;
+                      font-size: 11px;
+                      font-weight: bold;
+                    "
+                  >
+                    Tanda
+                    <span style="font-size: 13px; color: red">*</span> wajib
+                    diisi
+                  </span>
+                  <br />
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group row">
+                    <label
+                      class="col-md-4 col-form-label col-form-label-sm required"
+                      >Type</label
+                    >
+                    <div class="col-md-8">
+                      <div class="form-check">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          name="type"
+                          id="type"
+                          value="member"
+                          (click)="changeType()"
+                          [checked]="model.nama_customer != null"
+                        />
+                        <label class="form-check-label" for="exampleRadios1">
+                          Member
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <label
+                      class="col-md-4 col-form-label col-form-label-sm required"
+                      >Customer</label
+                    >
+                    <div class="col-md-8">
+                      <ng-select
+                        *ngIf="isMember"
+                        [(ngModel)]="model.id_customer"
+                        [items]="listCustomer"
+                        bindLabel="nama"
+                        bindValue="id"
+                        [disabled]="isView"
+                        name="id_customer"
+                        placeholder="Pilih Customer"
+                        appendTo="body"
+                        (change)="selected()"
+                      ></ng-select>
+                      <input
+                        *ngIf="!isMember"
+                        type="text"
+                        class="form-control form-control-sm"
+                        name="customer"
+                        placeholder="customer"
+                        [disabled]="isView"
+                        [(ngModel)]="model.customer"
+                      />
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <label
+                      class="col-md-4 col-form-label col-form-label-sm required"
+                      >Alamat</label
+                    >
+                    <div class="col-md-8">
+                      <input
+                        type="text"
+                        class="form-control form-control-sm"
+                        name="alamat"
+                        placeholder="alamat"
+                        [(ngModel)]="model.alamat"
+                        [disabled]="isMember || isView"
+                      />
+                    </div>
+                  </div>
+                  <!-- <div class="form-group row">
+                    <label
+                      class="col-md-4 col-form-label col-form-label-sm required"
+                      >Type</label
+                    >
+                    <div class="col-md-8">
+                      <ng-select
+                        [(ngModel)]="model.type"
+                        [items]="listType"
+                        bindLabel="nama"
+                        bindValue="nama"
+                        name="type"
+                        placeholder="pilih tipe"
+                        appendTo="body"
+                        disabled
+                      ></ng-select>
+                    </div>
+                  </div> -->
+                  <div class="form-group row">
+                    <label
+                      class="col-md-4 col-form-label col-form-label-sm required"
+                      >Tanggal</label
+                    >
+                    <div class="col-md-8">
+                      <input
+                        ngbDatepicker
+                        class="form-control form-control-sm"
+                        type="text"
+                        name="tanggal"
+                        [(ngModel)]="model.tanggal"
+                        placeholder="tanggal"
+                        #tanggal="ngbDatepicker"
+                        [minDate]="{ year: 1950, month: 1, day: 1 }"
+                        (click)="tanggal.toggle()"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="table-responsive">
+                <table class="table table-hover mobile-optimised mb-0">
+                  <thead class="thead-light">
+                    <tr class="text-center">
+                      <th width="20" class="align-middle-center">
+                        <button
+                          class="btn btn-success btn-sm"
+                          (click)="addRow(listPenjualan)"
+                        >
+                          +
+                        </button>
+                      </th>
+                      <th>Nama Barang</th>
+                      <th>Jumlah</th>
+                      <th>Harga Beli</th>
+                      <th colspan="3">Diskon</th>
+                      <th>Total</th>
+
+                      <!-- <th></th> -->
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      class="text-center"
+                      *ngFor="let val of listPenjualan; index as i"
+                    >
+                      <td>
+                        <button
+                          *ngIf="!isEdit"
+                          class="btn btn-danger"
+                          (click)="removeRow(i, val.total)"
+                        >
+                          -
+                        </button>
+                      </td>
+                      <td data-th="No">
+                        <ng-select
+                          [(ngModel)]="val.id_barang"
+                          [items]="listBarang"
+                          bindLabel="nama_barang"
+                          bindValue="id"
+                          [disabled]="isView"
+                          name="id_barang_{{ i }}"
+                          placeholder="pilih barang"
+                          appendTo="body"
+                          (change)="pembelian(val, val.id_barang)"
+                        ></ng-select>
+                      </td>
+                      <td data-th="No">
+                        <input
+                          class="form-control form-control-sm"
+                          type="number"
+                          name="jumlah_{{ i }}"
+                          [(ngModel)]="val.jumlah"
+                          placeholder="Jumlah"
+                          (change)="total()"
+                        />
+                      </td>
+                      <td data-th="No">
+                        <input
+                          class="form-control form-control-sm"
+                          type="number"
+                          name="harga_beli{{ i }}"
+                          [(ngModel)]="val.harga_beli"
+                          placeholder="Harga Beli"
+                          disabled
+                        />
+                      </td>
+                      <td data-th="No">
+                        <div class="input-group">
+                          <input
+                            type="number"
+                            class="form-control"
+                            name="diskon_barang_{{ i }}"
+                            [(ngModel)]="val.diskon_barang"
+                            (change)="total()"
+                            disabled
+                          />
+                          <div class="input-group-append">
+                            <span class="input-group-text">%</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td data-th="No">
+                        <div class="input-group">
+                          <input
+                            type="number"
+                            class="form-control"
+                            name="diskon_bonus_{{ i }}"
+                            [(ngModel)]="val.diskon_bonus"
+                            (change)="total()"
+                            aria-label="Dollar amount (with dot and two decimal places)"
+                            disabled
+                          />
+                          <div class="input-group-append">
+                            <span class="input-group-text">%</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td data-th="No">
+                        <input
+                          disabled
+                          class="form-control form-control-sm"
+                          name="diskon_total{{ i }}"
+                          [(ngModel)]="val.diskon_total"
+                          placeholder="jumlah diskon"
+                          (change)="total()"
+                        />
+                      </td>
+                      <td data-th="No">
+                        <input
+                          disabled
+                          class="form-control form-control-sm"
+                          name="total{{ i }}"
+                          [(ngModel)]="val.total"
+                          placeholder="0"
+                        />
+                      </td>
+                    </tr>
+                  </tbody>
+                  <tfoot>
+                    <tr>
+                      <td colspan="7">total</td>
+                      <td>
+                        <input
+                          disabled
+                          class="form-control form-control-sm"
+                          name="total"
+                          [(ngModel)]="model.total"
+                          placeholder="0"
+                        />
+                      </td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </fieldset>
+          </form>
+        </div>
+        <div class="card-footer">
+          <div class="float-right">
+            <button class="btn btn-light btn-sm mr-2" (click)="index()">
+              <i class="fa fa-chevron-left font-size-14 align-middle mr-2"></i>
+              Kembali
+            </button>
+            <button class="btn btn-light btn-sm mr-2" (click)="print()">
+              <i class="fas fas-print font-size-14 align-middle mr-2"></i>
+              Print
+            </button>
+
+            <button
+              class="btn btn-primary btn-sm"
+              [disabled]="model.nama == ''"
+              *ngIf="!isView"
+              (click)="save()"
+            >
+              <i class="fa fa-save font-size-14 align-middle mr-2"></i>
+              Simpan
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
